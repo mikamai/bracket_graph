@@ -30,13 +30,26 @@ module BracketGraph
 
     def build_tree size
       @root = Seat.new size
+      @seats = [root]
+      @matches = []
       current_nodes = [root]
       while current_nodes.size < size
-        current_nodes = current_nodes.inject([]) do |memo, current_node|
-          memo.concat current_node.build_input_match.from
-        end
+        current_nodes = create_matches_for_nodes current_nodes
       end
       @starting_seats = current_nodes
+    end
+
+    def create_matches_for_nodes seats
+      seats.inject([]) do |memo, seat|
+        memo.concat create_match_and_memoize_nodes(seat)
+      end
+    end
+
+    def create_match_and_memoize_nodes seat
+      match = seat.build_input_match
+      @matches << match
+      @seats.concat match.from
+      match.from
     end
   end
 end

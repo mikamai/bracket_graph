@@ -139,4 +139,33 @@ describe BracketGraph::Graph do
       end
     end
   end
+
+  describe '#seats' do
+    it 'returns seats' do
+      subject = subject_class.new 8
+      expect(subject.seats.map(&:class).uniq).to eq [BracketGraph::Seat]
+    end
+
+    it 'returns all generated seats' do
+      subject = subject_class.new 8
+      expect(subject.seats.count).to eq 15
+    end
+
+    it 'returns the root node too' do
+      subject = subject_class.new 8
+      expect(subject.seats).to include subject.root
+    end
+  end
+
+  describe '#matches' do
+    it 'returns matches' do
+      subject = subject_class.new 8
+      expect(subject.matches.map(&:class).uniq).to eq [BracketGraph::Match]
+    end
+
+    it 'returns all generated matches' do
+      subject = subject_class.new 8
+      expect(subject.matches.count).to eq  7
+    end
+  end
 end
