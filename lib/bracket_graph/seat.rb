@@ -52,8 +52,13 @@ module BracketGraph
       @from && @from.winner_to = self
     end
 
+    def as_json options = {}
+      data = { position: position }
+      from && data.update(from: from.as_json) || data
+    end
+
     def to_json *attrs
-      marshal_dump.to_json(*attrs)
+      as_json.to_json(*attrs)
     end
   end
 end

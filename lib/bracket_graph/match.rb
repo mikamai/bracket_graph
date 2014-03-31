@@ -68,8 +68,13 @@ module BracketGraph
       @winner = @from.detect { |s| s.position == data[:winner] } if data[:winner]
     end
 
+    def as_json
+      data = { from: from.map(&:as_json) }
+      winner && data.update(winner: winner.position) || data
+    end
+
     def to_json *attrs
-      marshal_dump.to_json *attrs
+      as_json.to_json *attrs
     end
 
     private

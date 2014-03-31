@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe BracketGraph::Match do
   let(:subject_class) { BracketGraph::Match }
-  let(:subject) { subject_class.new BracketGraph::Seat.new 12 }
+  subject { subject_class.new BracketGraph::Seat.new 12 }
 
   describe 'constructor' do
     it 'requires the winner destination' do

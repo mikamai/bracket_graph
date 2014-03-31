@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'active_support/core_ext'
 
 describe BracketGraph::Graph do
   let!(:subject_class) { BracketGraph::Graph }
