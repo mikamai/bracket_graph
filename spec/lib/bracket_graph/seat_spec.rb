@@ -111,6 +111,7 @@ describe BracketGraph::Seat do
     end
 
     it 'returns source match' do
+      subject.build_input_match
       expect(JSON.parse(subject.to_json).key? 'from').to be_true
     end
   end

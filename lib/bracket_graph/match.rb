@@ -58,7 +58,8 @@ module BracketGraph
     end
 
     def marshal_dump
-      { from: @from, winner: (@winner && @winner.position) }
+      data = { from: from }
+      winner && data.update(winner: winner.position) || data
     end
 
     def marshal_load data

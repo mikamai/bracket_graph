@@ -42,7 +42,8 @@ module BracketGraph
     end
 
     def marshal_dump
-      { position: @position, from: @from }
+      data = { position: position }
+      from && data.update(from: from) || data
     end
 
     def marshal_load data

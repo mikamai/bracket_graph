@@ -172,6 +172,7 @@ describe BracketGraph::Match do
     end
 
     it 'returns winner flag' do
+      subject.winner = subject.from.first
       expect(JSON.parse(subject.to_json).key? 'winner').to be_true
     end
   end
