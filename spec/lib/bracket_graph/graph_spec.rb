@@ -168,4 +168,25 @@ describe BracketGraph::Graph do
       expect(subject.matches.count).to eq  7
     end
   end
+
+  describe '#marshal_dump' do
+    it 'returns the root node' do
+      subject = subject_class.new 8
+      expect(subject.marshal_dump).to eq subject.root
+    end
+  end
+
+  describe '#marshal_load' do
+    it 'requires the root node' do
+      subject = subject_class.new 8
+      other = subject_class.new 2
+      expect { other.marshal_load subject.root }.to change(other, :root).to subject.root
+    end
+
+    it 'updates all references' do
+      subject = subject_class.new 8
+      other = subject_class.new 2
+      expect { other.marshal_load subject.root }.to change(other, :seats)
+    end
+  end
 end

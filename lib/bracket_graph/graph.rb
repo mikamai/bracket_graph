@@ -19,6 +19,15 @@ module BracketGraph
       end
     end
 
+    def marshal_dump
+      @root
+    end
+
+    def marshal_load data
+      @root = data
+      update_references
+    end
+
     private
 
     def prepare_teams_for_seed teams, shuffle: false
@@ -30,26 +39,28 @@ module BracketGraph
 
     def build_tree size
       @root = Seat.new size
+      Math.log2(size).to_i.times.inject [root] do |seats|
+        seats.inject [] do |memo, seat|
+          memo.concat seat.build_input_match.from
+        end
+      end
+      update_references
+    end
+
+    def update_references
       @seats = [root]
       @matches = []
-      current_nodes = [root]
-      while current_nodes.size < size
-        current_nodes = create_matches_for_nodes current_nodes
-      end
-      @starting_seats = current_nodes
+      current_seats = [root]
+      root.round.times { current_seats = update_references_for_seats current_seats }
+      @starting_seats = current_seats
     end
 
-    def create_matches_for_nodes seats
-      seats.inject([]) do |memo, seat|
-        memo.concat create_match_and_memoize_nodes(seat)
+    def update_references_for_seats seats
+      seats.inject [] do |memo, seat|
+        match = seat.from
+        @matches << match
+        @seats.concat(match.from) && memo.concat(match.from)
       end
-    end
-
-    def create_match_and_memoize_nodes seat
-      match = seat.build_input_match
-      @matches << match
-      @seats.concat match.from
-      match.from
     end
   end
 end
