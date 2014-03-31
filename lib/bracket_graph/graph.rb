@@ -8,6 +8,13 @@ module BracketGraph
       build_tree size
     end
 
+    def seed teams
+      teams = teams.dup
+      starting_seats.each do |seat|
+        seat.payload = teams.shift
+      end
+    end
+
     private
 
     def build_tree size

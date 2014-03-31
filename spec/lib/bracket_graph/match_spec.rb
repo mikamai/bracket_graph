@@ -54,4 +54,62 @@ describe BracketGraph::Match do
       expect(subject.round).to eq 10
     end
   end
+
+  describe '#winner' do
+    it 'returns nil if match has not been played' do
+      expect(subject.winner).to be_nil
+    end
+  end
+
+  describe '#loser' do
+    it 'returns nil if match has not been played' do
+      expect(subject.loser).to be_nil
+    end
+  end
+
+  describe '#winner=' do
+    it 'requires a seat' do
+      expect { subject.winner = 'asd' }.to raise_error ArgumentError
+    end
+
+    it 'requires one of the children' do
+      expect { subject.winner = BracketGraph::Seat.new 10 }.to raise_error ArgumentError
+    end
+
+    it 'assigns the winner' do
+      expect { subject.winner = subject.from.first }.to change(subject, :winner).to subject.from.first
+    end
+
+    it 'assigns the loser' do
+      expect { subject.winner = subject.from.first }.to change(subject, :loser).to subject.from.last
+    end
+
+    it 'copies the winner payload to the winner destination seat' do
+      subject.from.first.payload = 'asd'
+      expect { subject.winner = subject.from.first }.to change(subject.winner_to, :payload).to 'asd'
+    end
+  end
+
+  describe '#loser=' do
+    it 'requires a seat' do
+      expect { subject.loser = 'asd' }.to raise_error ArgumentError
+    end
+
+    it 'requires one of the children' do
+      expect { subject.loser = BracketGraph::Seat.new 10 }.to raise_error ArgumentError
+    end
+
+    it 'assigns the winner' do
+      expect { subject.loser = subject.from.first }.to change(subject, :winner).to subject.from.last
+    end
+
+    it 'assigns the loser' do
+      expect { subject.loser = subject.from.first }.to change(subject, :loser).to subject.from.first
+    end
+
+    it 'copies the winner payload to the winner destination seat' do
+      subject.from.first.payload = 'asd'
+      expect { subject.loser = subject.from.last }.to change(subject.winner_to, :payload).to 'asd'
+    end
+  end
 end

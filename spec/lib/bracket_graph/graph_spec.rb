@@ -92,4 +92,30 @@ describe BracketGraph::Graph do
       end
     end
   end
+
+  describe '#seed' do
+    it 'assigns the given teams to the starting seats' do
+      subject = subject_class.new 4
+      subject.seed [1,2,3,4]
+      expect(subject.starting_seats.map(&:payload)).to match_array [1,2,3,4]
+    end
+
+    it 'does not change the given array' do
+      subject = subject_class.new 4
+      array = [1,2,3,4]
+      expect { subject.seed array }.to_not change array, :count
+    end
+
+    it 'fills seats by position' do
+      subject = subject_class.new 4
+      subject.seed [1,2,3,4]
+      expect(subject.starting_seats.sort_by(&:position).map(&:payload)).to eq [1,2,3,4]
+    end
+
+    it 'leaves remaining seats with a nil payload' do
+      subject = subject_class.new 4
+      subject.seed [1,2,3]
+      expect(subject.starting_seats.sort_by(&:position).map(&:payload)).to eq [1,2,3,nil]
+    end
+  end
 end

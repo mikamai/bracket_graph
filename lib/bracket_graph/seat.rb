@@ -1,6 +1,7 @@
 module BracketGraph
   class Seat
     attr_reader :from, :to, :depth, :position
+    attr_accessor :payload
 
     def initialize position, to = nil
       @position, @to = position, to
