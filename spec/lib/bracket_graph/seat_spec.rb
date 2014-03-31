@@ -5,7 +5,8 @@ describe BracketGraph::Seat do
 
   describe 'constructor' do
     it 'accepts the destination' do
-      expect(subject_class.new('a').to).to eq 'a'
+      match = BracketGraph::Match.new subject_class.new
+      expect(subject_class.new(match).to).to eq match
     end
 
     it 'accepts the source' do
@@ -29,6 +30,17 @@ describe BracketGraph::Seat do
     it 'raises an error if a source input match is present' do
       subject.build_input_match
       expect { subject.build_input_match }.to raise_error NoMethodError
+    end
+  end
+
+  describe '#depth' do
+    it 'is 0 when the seat has no destination' do
+      expect(subject_class.new.depth).to eq 0
+    end
+
+    it 'equals destination_depth when destination is set' do
+      destination = double depth: 10
+      expect(subject_class.new(destination).depth).to eq 10
     end
   end
 end

@@ -1,12 +1,12 @@
 module BracketGraph
   class Match
-    attr_accessor :from
-    attr_accessor :winner_to
+    attr_reader :from, :winner_to, :depth
 
-    def initialize winner_to = nil, from = []
+    def initialize winner_to, from = []
       raise ArgumentError, 'source argument must be an array of source nodes' unless from.is_a? Array
       @from = from
       @winner_to = winner_to
+      @depth = @winner_to.depth + 1
     end
 
     def build_input_seats

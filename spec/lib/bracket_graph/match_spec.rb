@@ -2,14 +2,20 @@ require 'spec_helper'
 
 describe BracketGraph::Match do
   let(:subject_class) { BracketGraph::Match }
+  let(:subject) { subject_class.new BracketGraph::Seat.new }
 
   describe 'constructor' do
-    it 'accepts a winner destination' do
-      expect(subject_class.new('asd').winner_to).to eq 'asd'
+    it 'requires the winner destination' do
+      expect { subject_class.new }.to raise_error ArgumentError
+    end
+
+    it 'sets the winner destination' do
+      node = BracketGraph::Seat.new
+      expect(subject_class.new(node).winner_to).to eq node
     end
 
     it 'accepts a source array' do
-      expect(subject_class.new(nil,['a','b']).from).to eq ['a','b']
+      expect(subject_class.new(BracketGraph::Seat.new,['a','b']).from).to eq ['a','b']
     end
 
     it 'raises an error if source is not an array' do
@@ -28,6 +34,13 @@ describe BracketGraph::Match do
 
     it 'sets the current match as the destination of the built seats' do
       expect(subject.build_input_seats.map(&:to).uniq).to eq [subject]
+    end
+  end
+
+  describe '#depth' do
+    it 'equals to destination_depth + 1' do
+      subject = subject_class.new double depth: 10
+      expect(subject.depth).to eq 11
     end
   end
 end
