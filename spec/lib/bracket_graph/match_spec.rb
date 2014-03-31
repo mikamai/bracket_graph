@@ -112,4 +112,53 @@ describe BracketGraph::Match do
       expect { subject.loser = subject.from.last }.to change(subject.winner_to, :payload).to 'asd'
     end
   end
+
+  describe 'marshalling' do
+    it 'stores sources' do
+      expect(subject.marshal_dump[:from].count).to eq 2
+    end
+
+    context 'when the match has been played' do
+      it 'stores winner position' do
+        subject.winner = subject.from.first
+        expect(subject.marshal_dump[:winner]).to eq subject.from.first.position
+      end
+    end
+
+    context 'when the match has not been played' do
+      it 'stores winner to nil' do
+        expect(subject.marshal_dump[:winner]).to be_nil
+      end
+    end
+
+    it 'loads sources' do
+      other = subject_class.new BracketGraph::Seat.new 10
+      other.marshal_load subject.marshal_dump
+      expect(other.from.map(&:position)).to eq subject.from.map(&:position)
+    end
+
+    it 'updates the to reference' do
+      other = subject_class.new BracketGraph::Seat.new 10
+      other.marshal_load subject.marshal_dump
+      expect(other.from.map(&:to).uniq).to eq [other]
+    end
+
+    context 'if winner is set' do
+      before { subject.winner = subject.from.first }
+
+      it 'loads the winner object' do
+        other = subject_class.new BracketGraph::Seat.new 10
+        other.marshal_load subject.marshal_dump
+        expect(other.winner).to eq other.from.first
+      end
+    end
+
+    context 'if winner is nil' do
+      it 'does not load the winner object' do
+        other = subject_class.new BracketGraph::Seat.new 10
+        other.marshal_load subject.marshal_dump
+        expect(other.winner).to be_nil
+      end
+    end
+  end
 end

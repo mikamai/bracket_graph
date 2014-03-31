@@ -1,11 +1,14 @@
 module BracketGraph
   class Seat
-    attr_reader :from, :to, :depth, :position
-    attr_accessor :payload
+    attr_reader :from, :position
+    attr_accessor :payload, :to
 
     def initialize position, to = nil
       @position, @to = position, to
-      @depth = to && to.depth || 0
+    end
+
+    def depth
+      @depth ||= to && to.depth || 0
     end
 
     def to_winner_seat
@@ -19,6 +22,16 @@ module BracketGraph
     def build_input_match
       raise NoMethodError, 'you cannot build a source match again' if from
       @from = Match.new self
+    end
+
+    def marshal_dump
+      { position: @position, from: @from }
+    end
+
+    def marshal_load data
+      @position = data[:position]
+      @from = data[:from]
+      @from && @from.winner_to = self
     end
   end
 end

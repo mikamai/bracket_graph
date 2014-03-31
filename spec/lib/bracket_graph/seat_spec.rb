@@ -71,4 +71,31 @@ describe BracketGraph::Seat do
       expect(subject.round).to eq 11
     end
   end
+
+  describe 'marshalling' do
+    it 'stores source and position' do
+      subject = subject_class.new 10
+      subject.instance_variable_set '@from', 'asd'
+      expect(subject.marshal_dump).to eq position: 10, from: 'asd'
+    end
+
+    it 'restores position' do
+      subject = subject_class.new 10
+      expect { subject.marshal_load position: 1, from: nil }.to change(subject, :position).to 1
+    end
+
+    it 'restores source' do
+      subject = subject_class.new 10
+      source = double :winner_to= => nil
+      expect { subject.marshal_load position: 1, from: source }.to change(subject, :from).to source
+    end
+
+    it 'restores source winner_to' do
+      subject = subject_class.new 10
+      subject.build_input_match
+      other = subject_class.new 10
+      other.marshal_load subject.marshal_dump
+      expect(other.from.winner_to).to eq other
+    end
+  end
 end
