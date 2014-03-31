@@ -11,8 +11,8 @@ module BracketGraph
     private
 
     def build_tree size
-      @root = Seat.new
-      current_nodes = [@root]
+      @root = Seat.new size
+      current_nodes = [root]
       while current_nodes.size < size
         current_nodes = current_nodes.inject([]) do |memo, current_node|
           memo.concat current_node.build_input_match.from

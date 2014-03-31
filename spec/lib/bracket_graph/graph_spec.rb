@@ -61,6 +61,17 @@ describe BracketGraph::Graph do
       subject = subject_class.new 128
       expect(subject.starting_seats.map(&:round).uniq).to eq [0]
     end
+
+    it 'sets root position to size' do
+      subject = subject_class.new 64
+      expect(subject.root.position).to eq 64
+    end
+
+    it 'sets source seats (through the match) to size - (size / 2) and size + (size / 2)' do
+      subject = subject_class.new 64
+      children = subject.root.from.from
+      expect(children.map(&:position).sort).to eq [32,96]
+    end
   end
 
   describe '#starting_seats' do
