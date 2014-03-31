@@ -14,26 +14,20 @@ describe BracketGraph::Match do
       expect(subject_class.new(node).winner_to).to eq node
     end
 
-    it 'accepts a source array' do
-      expect(subject_class.new(BracketGraph::Seat.new,['a','b']).from).to eq ['a','b']
-    end
-
-    it 'raises an error if source is not an array' do
-      expect { subject_class.new nil, 'asd' }.to raise_error ArgumentError
-    end
-  end
-
-  describe '#build_input_seats' do
     it 'fills source seats with two items' do
-      expect(subject.build_input_seats.count).to eq 2
+      expect(subject.from.count).to eq 2
     end
 
     it 'fills source seats with seats objects' do
-      expect(subject.build_input_seats.map(&:class).uniq).to eq [BracketGraph::Seat]
+      expect(subject.from.map(&:class).uniq).to eq [BracketGraph::Seat]
     end
 
     it 'sets the current match as the destination of the built seats' do
-      expect(subject.build_input_seats.map(&:to).uniq).to eq [subject]
+      expect(subject.from.map(&:to).uniq).to eq [subject]
+    end
+
+    it 'creates the children giving the correct depth info' do
+      expect(subject.from.map(&:depth).uniq).to eq [1]
     end
   end
 
@@ -41,6 +35,13 @@ describe BracketGraph::Match do
     it 'equals to destination_depth + 1' do
       subject = subject_class.new double depth: 10
       expect(subject.depth).to eq 11
+    end
+  end
+
+  describe '#round' do
+    it 'equals to the first source item round' do
+      subject.stub from: [double(round: 10)]
+      expect(subject.round).to eq 10
     end
   end
 end

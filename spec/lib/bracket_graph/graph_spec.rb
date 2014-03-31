@@ -41,5 +41,44 @@ describe BracketGraph::Graph do
       expect(nodes.count).to eq 128
       nodes.each { |node| expect(node.from).to be_nil }
     end
+
+    it 'sets depths starting from 0' do
+      subject = subject_class.new 128
+      expect(subject.root.depth).to eq 0
+    end
+
+    it 'sets depths ending to log2 of size' do
+      subject = subject_class.new 128
+      expect(subject.starting_seats.map(&:depth).uniq).to eq [7]
+    end
+
+    it 'sets rounds starting from log2 of size' do
+      subject = subject_class.new 128
+      expect(subject.root.round).to eq 7
+    end
+
+    it 'sets rounds ending to 0' do
+      subject = subject_class.new 128
+      expect(subject.starting_seats.map(&:round).uniq).to eq [0]
+    end
+  end
+
+  describe '#starting_seats' do
+    it 'returns a collection of the given size' do
+      subject = subject_class.new 128
+      expect(subject.starting_seats.count).to eq 128
+    end
+
+    it 'returns a collection of seats' do
+      subject = subject_class.new 8
+      expect(subject.starting_seats.map(&:class).uniq).to eq [BracketGraph::Seat]
+    end
+
+    it 'returns the last level seats' do
+      subject = subject_class.new 8
+      subject.starting_seats.each do |seat|
+        expect(seat.from).to be_nil
+      end
+    end
   end
 end

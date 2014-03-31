@@ -2,9 +2,13 @@ module BracketGraph
   class Seat
     attr_reader :from, :to, :depth
 
-    def initialize to = nil, from = nil
-      @from, @to = from, to
+    def initialize to = nil
+      @to = to
       @depth = to && to.depth || 0
+    end
+
+    def round
+      from && from.round + 1 || 0
     end
 
     def build_input_match

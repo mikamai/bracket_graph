@@ -9,8 +9,8 @@ describe BracketGraph::Seat do
       expect(subject_class.new(match).to).to eq match
     end
 
-    it 'accepts the source' do
-      expect(subject_class.new(nil,'b').from).to eq 'b'
+    it 'allows the destination to not be set' do
+      expect { subject_class.new }.to_not raise_error
     end
   end
 
@@ -41,6 +41,17 @@ describe BracketGraph::Seat do
     it 'equals destination_depth when destination is set' do
       destination = double depth: 10
       expect(subject_class.new(destination).depth).to eq 10
+    end
+  end
+
+  describe '#round' do
+    it 'returns 0 if seat has no source' do
+      expect(subject_class.new.round).to be_zero
+    end
+
+    it 'returns source_round + 1 if a source exists' do
+      subject.stub from: double(round: 10)
+      expect(subject.round).to eq 11
     end
   end
 end
