@@ -94,6 +94,11 @@ describe BracketGraph::Graph do
   end
 
   describe '#seed' do
+    it 'raises error if there are more teams than starting seats' do
+      subject = subject_class.new 4
+      expect { subject.seed [1,2,3,4,5] }.to raise_error ArgumentError
+    end
+
     it 'assigns the given teams to the starting seats' do
       subject = subject_class.new 4
       subject.seed [1,2,3,4]

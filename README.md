@@ -1,29 +1,5 @@
 # BracketGraph
 
-TODO: Write a gem description
+Bracket Graph Library.
 
-## Installation
-
-Add this line to your application's Gemfile:
-
-    gem 'bracket_graph'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install bracket_graph
-
-## Usage
-
-TODO: Write usage instructions here
-
-## Contributing
-
-1. Fork it ( http://github.com/<my-github-username>/bracket_graph/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+It helps managing a graph for a single elimination bracket where each seat leads to a match that leads to a winner seat.
