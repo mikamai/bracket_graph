@@ -161,4 +161,18 @@ describe BracketGraph::Match do
       end
     end
   end
+
+  describe '#to_json' do
+    it 'returns a json representation' do
+      expect { JSON.parse subject.to_json }.to_not raise_error
+    end
+
+    it 'returns source seats' do
+      expect(JSON.parse(subject.to_json)['from'].count).to eq 2
+    end
+
+    it 'returns winner flag' do
+      expect(JSON.parse(subject.to_json).key? 'winner').to be_true
+    end
+  end
 end

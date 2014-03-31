@@ -28,6 +28,10 @@ module BracketGraph
       update_references
     end
 
+    def to_json *attrs
+      marshal_dump.to_json *attrs
+    end
+
     private
 
     def prepare_teams_for_seed teams, shuffle: false

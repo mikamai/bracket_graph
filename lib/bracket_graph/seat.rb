@@ -33,5 +33,9 @@ module BracketGraph
       @from = data[:from]
       @from && @from.winner_to = self
     end
+
+    def to_json *attrs
+      marshal_dump.to_json(*attrs)
+    end
   end
 end

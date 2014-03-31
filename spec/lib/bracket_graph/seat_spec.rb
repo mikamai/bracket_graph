@@ -98,4 +98,20 @@ describe BracketGraph::Seat do
       expect(other.from.winner_to).to eq other
     end
   end
+
+  describe '#to_json' do
+    before { subject = subject_class.new 10 }
+
+    it 'returns a json representation' do
+      expect { JSON.parse subject.to_json }.to_not raise_error
+    end
+
+    it 'returns position' do
+      expect(JSON.parse(subject.to_json)['position']).to eq 10
+    end
+
+    it 'returns source match' do
+      expect(JSON.parse(subject.to_json).key? 'from').to be_true
+    end
+  end
 end

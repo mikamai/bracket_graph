@@ -43,6 +43,10 @@ module BracketGraph
       @winner = @from.detect { |s| s.position == data[:winner] } if data[:winner]
     end
 
+    def to_json *attrs
+      marshal_dump.to_json *attrs
+    end
+
     private
 
     def create_children
