@@ -162,6 +162,11 @@ describe BracketGraph::Graph do
   end
 
   describe '#matches' do
+    it 'returns a Matches collection' do
+      subject = subject_class.new 8
+      expect(subject.matches).to be_a BracketGraph::Matches
+    end
+
     it 'returns matches' do
       subject = subject_class.new 8
       expect(subject.matches.map(&:class).uniq).to eq [BracketGraph::Match]

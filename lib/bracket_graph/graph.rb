@@ -71,7 +71,7 @@ module BracketGraph
 
     def update_references
       @seats = [root]
-      @matches = []
+      @matches = Matches.new
       current_seats = [root]
       root.round.times { current_seats = update_references_for_seats current_seats }
       @starting_seats = current_seats
