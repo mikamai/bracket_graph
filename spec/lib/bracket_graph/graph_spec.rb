@@ -71,6 +71,11 @@ describe BracketGraph::Graph do
       children = subject.root.from.from
       expect(children.map(&:position).sort).to eq [32,96]
     end
+
+    it 'does not duplicate positions' do
+      subject = subject_class.new 128
+      expect(subject.seats.map(&:position).uniq.count).to eq subject.seats.count
+    end
   end
 
   describe '#starting_seats' do

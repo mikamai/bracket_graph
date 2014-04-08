@@ -43,7 +43,7 @@ describe BracketGraph::Match do
 
   describe '#depth' do
     it 'equals to destination_depth + 1' do
-      subject = subject_class.new double depth: 10, position: 10
+      subject = subject_class.new double depth: 10, position: 10, to: nil
       expect(subject.depth).to eq 11
     end
   end

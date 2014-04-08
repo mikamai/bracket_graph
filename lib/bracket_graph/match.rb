@@ -81,7 +81,11 @@ module BracketGraph
 
     def create_children
       dest_pos = winner_to.position
-      dest_pos_halved = dest_pos / 2
+      if (winner_to.to)
+        dest_pos_halved = (dest_pos - winner_to.to.winner_to.position).abs / 2
+      else
+        dest_pos_halved = dest_pos / 2
+      end
       @from = [
         Seat.new(dest_pos - dest_pos_halved, self),
         Seat.new(dest_pos + dest_pos_halved, self)
