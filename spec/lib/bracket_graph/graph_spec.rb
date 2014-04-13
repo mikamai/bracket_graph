@@ -17,24 +17,17 @@ describe BracketGraph::Graph do
       expect(subject.root).to be_a BracketGraph::Seat
     end
 
-    it 'appends a match node to the root' do
-      subject = subject_class.new 4
-      expect(subject.root.from).to be_a BracketGraph::Match
-    end
-
     it 'appends two seats as input in the root match node' do
       subject = subject_class.new 4
-      expect(subject.root.from.from.map(&:class)).to eq [BracketGraph::Seat,BracketGraph::Seat]
+      expect(subject.root.from.map(&:class)).to eq [BracketGraph::Seat,BracketGraph::Seat]
     end
 
     it 'follows this pattern until the last level children count is equal to the graph size' do
       subject = subject_class.new 128
       nodes = 7.times.inject([subject.root]) do |current_nodes|
         current_nodes.inject([]) do |memo, node|
-          from_match = node.from
-          expect(from_match).to be_a BracketGraph::Match
-          expect(from_match.from.count).to eq 2
-          memo.concat from_match.from
+          expect(node.from.count).to eq 2
+          memo.concat node.from
         end
       end
       expect(nodes.count).to eq 128
@@ -68,7 +61,7 @@ describe BracketGraph::Graph do
 
     it 'sets source seats (through the match) to size - (size / 2) and size + (size / 2)' do
       subject = subject_class.new 64
-      children = subject.root.from.from
+      children = subject.root.from
       expect(children.map(&:position).sort).to eq [32,96]
     end
 
@@ -163,23 +156,6 @@ describe BracketGraph::Graph do
     it 'returns the root node too' do
       subject = subject_class.new 8
       expect(subject.seats).to include subject.root
-    end
-  end
-
-  describe '#matches' do
-    it 'returns a Matches collection' do
-      subject = subject_class.new 8
-      expect(subject.matches).to be_a BracketGraph::Matches
-    end
-
-    it 'returns matches' do
-      subject = subject_class.new 8
-      expect(subject.matches.map(&:class).uniq).to eq [BracketGraph::Match]
-    end
-
-    it 'returns all generated matches' do
-      subject = subject_class.new 8
-      expect(subject.matches.count).to eq  7
     end
   end
 

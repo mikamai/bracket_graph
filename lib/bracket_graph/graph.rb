@@ -1,7 +1,7 @@
 module BracketGraph
   class Graph
     attr_reader :root
-    attr_reader :starting_seats, :seats, :matches
+    attr_reader :starting_seats, :seats
 
     # Builds a new graph.
     # The graph will be composed by a root seat and a match with two seats pointing to the root seat
@@ -63,7 +63,7 @@ module BracketGraph
       # Math.log2(size) indicates the graph depth
       Math.log2(size).to_i.times.inject [root] do |seats|
         seats.inject [] do |memo, seat|
-          memo.concat seat.build_input_match.from
+          memo.concat seat.create_children
         end
       end
       update_references
@@ -71,7 +71,6 @@ module BracketGraph
 
     def update_references
       @seats = [root]
-      @matches = Matches.new
       current_seats = [root]
       root.round.times { current_seats = update_references_for_seats current_seats }
       @starting_seats = current_seats
@@ -79,9 +78,7 @@ module BracketGraph
 
     def update_references_for_seats seats
       seats.inject [] do |memo, seat|
-        match = seat.from
-        @matches << match
-        @seats.concat(match.from) && memo.concat(match.from)
+        @seats.concat(seat.from) && memo.concat(seat.from)
       end
     end
   end

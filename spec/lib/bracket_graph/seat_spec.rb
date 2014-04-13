@@ -15,8 +15,8 @@ describe BracketGraph::Seat do
     end
 
     it 'accepts the destination' do
-      match = BracketGraph::Match.new subject_class.new 12
-      expect(subject_class.new(10, match).to).to eq match
+      dest = subject_class.new 12
+      expect(subject_class.new(10, dest).to).to eq dest
     end
 
     it 'allows the destination to not be set' do
@@ -24,29 +24,22 @@ describe BracketGraph::Seat do
     end
   end
 
-  describe 'build_input_match' do
+  describe '#create_children' do
     it 'fills the source' do
-      expect { subject.build_input_match }.to change(subject, :from)
+      expect { subject.create_children }.to change(subject, :from).to Array
     end
 
-    it 'sets a match as source' do
-      expect(subject.build_input_match).to be_a BracketGraph::Match
+    it 'builds source using two seats' do
+      expect(subject.create_children.map(&:class).uniq).to eq [BracketGraph::Seat]
     end
 
-    it 'sets the current seat as destination for the built match' do
-      expect(subject.build_input_match.winner_to).to eq subject
+    it 'sets the current seat as destination for the built seats' do
+      expect(subject.create_children.map(&:to).uniq).to eq [subject]
     end
 
-    it 'raises an error if a source input match is present' do
-      subject.build_input_match
-      expect { subject.build_input_match }.to raise_error NoMethodError
-    end
-  end
-
-  describe '#to_winner_seat' do
-    it 'returns the seat where the match winner will go' do
-      subject.build_input_match
-      expect(subject.from.from.map(&:to_winner_seat).uniq).to eq [subject]
+    it 'raises an error if a source is already built' do
+      subject.create_children
+      expect { subject.create_children }.to raise_error NoMethodError
     end
   end
 
@@ -55,9 +48,9 @@ describe BracketGraph::Seat do
       expect(subject_class.new(10).depth).to eq 0
     end
 
-    it 'equals destination_depth when destination is set' do
+    it 'equals destination_depth + 1when destination is set' do
       destination = double depth: 10
-      expect(subject_class.new(10, destination).depth).to eq 10
+      expect(subject_class.new(10, destination).depth).to eq 11
     end
   end
 
@@ -67,7 +60,7 @@ describe BracketGraph::Seat do
     end
 
     it 'returns source_round + 1 if a source exists' do
-      subject.stub from: double(round: 10)
+      subject.stub from: [double(round: 10), double(round: 10)]
       expect(subject.round).to eq 11
     end
   end
@@ -86,16 +79,16 @@ describe BracketGraph::Seat do
 
     it 'restores source' do
       subject = subject_class.new 10
-      source = double :winner_to= => nil
+      source = [subject_class.new(8), subject_class.new(6)]
       expect { subject.marshal_load position: 1, from: source }.to change(subject, :from).to source
     end
 
-    it 'restores source winner_to' do
+    it 'restores source to' do
       subject = subject_class.new 10
-      subject.build_input_match
+      subject.create_children
       other = subject_class.new 10
       other.marshal_load subject.marshal_dump
-      expect(other.from.winner_to).to eq other
+      expect(other.from.map(&:to).uniq).to eq [other]
     end
   end
 
@@ -111,7 +104,7 @@ describe BracketGraph::Seat do
     end
 
     it 'returns source match' do
-      subject.build_input_match
+      subject.create_children
       expect(JSON.parse(subject.to_json).key? 'from').to be_true
     end
   end

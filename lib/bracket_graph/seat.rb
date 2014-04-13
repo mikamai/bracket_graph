@@ -19,26 +19,29 @@ module BracketGraph
 
     # Graph depth until this level. If there is no destination it will return 0, otherwise it will return the destionation depth
     def depth
-      @depth ||= to && to.depth || 0
-    end
-
-    # The seat where the winner of the destination match will go
-    def to_winner_seat
-      to.winner_to
+      @depth ||= to && to.depth + 1 || 0
     end
 
     # Round is the opposite of depth. While depth is 0 in the root node and Math.log2(size) at the lower level
     # round is 0 at the lower level and Math.log2(size) in the root node
     # While depth is memoized, round is calculated each time. If the seat has a source, it's the source round + 1, otherwise it's 0
     def round
-      from && from.round + 1 || 0
+      from && from.first.round + 1 || 0
     end
 
     # Builds a match as a source of this seat
     # @raise [NoMethodError] if a source match has already been set
-    def build_input_match
-      raise NoMethodError, 'you cannot build a source match again' if from
-      @from = Match.new self
+    def create_children
+      raise NoMethodError, 'children already built' if from.present?
+      relative_position_halved = if to
+        (position - to.position).abs / 2
+      else
+        position / 2
+      end
+      @from = [
+        Seat.new(position - relative_position_halved, self),
+        Seat.new(position + relative_position_halved, self)
+      ]
     end
 
     def marshal_dump
@@ -49,12 +52,12 @@ module BracketGraph
     def marshal_load data
       @position = data[:position]
       @from = data[:from]
-      @from && @from.winner_to = self
+      @from && @from.each { |s| s.to = self }
     end
 
     def as_json options = {}
       data = { position: position }
-      from && data.update(from: from.as_json) || data
+      from && data.update(from: from.map(&:as_json)) || data
     end
 
     def to_json *attrs
