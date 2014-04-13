@@ -15,6 +15,10 @@ module BracketGraph
       build_tree size
     end
 
+    def [](position)
+      seats.detect { |s| s.position == position }
+    end
+
     # Number of the starting seats
     def size
       starting_seats.size

@@ -142,6 +142,13 @@ describe BracketGraph::Graph do
     end
   end
 
+  describe '#[]' do
+    it 'return the seat with the given position' do
+      subject = subject_class.new 8
+      expect(subject[6].position).to eq 6
+    end
+  end
+
   describe '#seats' do
     it 'returns seats' do
       subject = subject_class.new 8
