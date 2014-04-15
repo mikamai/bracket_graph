@@ -107,5 +107,10 @@ describe BracketGraph::Seat do
       subject.create_children
       expect(JSON.parse(subject.to_json).key? 'from').to be_true
     end
+
+    it 'returns payload' do
+      subject.payload = { id: 9 }
+      expect(JSON.parse(subject.to_json)['payload']).to eq 'id' => 9
+    end
   end
 end

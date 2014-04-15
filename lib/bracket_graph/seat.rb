@@ -57,6 +57,7 @@ module BracketGraph
 
     def as_json options = {}
       data = { position: position }
+      data.update payload: payload if payload
       from && data.update(from: from.map(&:as_json)) || data
     end
 
