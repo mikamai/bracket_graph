@@ -55,11 +55,12 @@ module BracketGraph
     private
 
     def prepare_teams_for_seed teams, shuffle: false
-      # fills teams with missing values
-      teams = teams + ([nil] * (size - teams.size))
-      teams.tap do |teams|
-        teams.shuffle! if shuffle
+      teams = shuffle && teams.shuffle || teams.dup
+      (size - teams.size).times do |i|
+        nil_index = i * 2 > teams.size ? teams.size : i * 2
+        teams.insert nil_index, nil
       end
+      teams
     end
 
     def build_tree size
