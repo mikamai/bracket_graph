@@ -31,9 +31,9 @@ module BracketGraph
     # @raise [ArgumentError] if `teams.count` is greater then `#size`
     def seed teams, shuffle: false
       raise ArgumentError, "Only a maximum of #{size} teams is allowed" if teams.size > size
-      teams = prepare_teams_for_seed teams, shuffle: shuffle
+      slots = TeamSeeder.new(teams, size, shuffle: shuffle).slots
       starting_seats.each do |seat|
-        seat.payload = teams.shift
+        seat.payload = slots.shift
       end
     end
 
@@ -53,15 +53,6 @@ module BracketGraph
     end
 
     private
-
-    def prepare_teams_for_seed teams, shuffle: false
-      teams = shuffle && teams.shuffle || teams.dup
-      (size - teams.size).times do |i|
-        nil_index = i * 2 > teams.size ? teams.size : i * 2
-        teams.insert nil_index, nil
-      end
-      teams
-    end
 
     def build_tree size
       @root = Seat.new size

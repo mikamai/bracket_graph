@@ -120,36 +120,10 @@ describe BracketGraph::Graph do
       expect(subject.starting_seats.sort_by(&:position).map(&:payload)).to eq [nil,1,2,3]
     end
 
-    it 'calls #prepare_teams_for_seed' do
+    it 'uses the TeamSeeder' do
       subject = subject_class.new 4
-      expect(subject).to receive(:prepare_teams_for_seed).with([1,2,3,4], shuffle: true).and_return []
+      expect_any_instance_of(TeamSeeder).to receive(:slots).and_return []
       subject.seed [1,2,3,4], shuffle: true
-    end
-  end
-
-  describe '#prepare_teams_for_seed' do
-    it 'fills missing values with nils' do
-      subject = subject_class.new 4
-      expect(subject.send :prepare_teams_for_seed, [1,2]).to eq [nil, 1, nil, 2]
-    end
-
-    it 'correctly fills nils even if there are more nils than real values' do
-      subject = subject_class.new 8
-      expect(subject.send :prepare_teams_for_seed, [1,2]).to eq [nil, 1, nil, 2, nil, nil, nil, nil]
-    end
-
-    it 'does not alter the original collection' do
-      subject = subject_class.new 4
-      teams = [1,2]
-      expect { subject.send :prepare_teams_for_seed, teams }.to_not change teams, :count
-    end
-
-    context 'when the shuffle option is set' do
-      it 'shuffles the given collection' do
-        subject = subject_class.new 4
-        expect_any_instance_of(Array).to receive(:shuffle)
-        subject.send :prepare_teams_for_seed, [1,2,3,4], shuffle: true
-      end
     end
   end
 

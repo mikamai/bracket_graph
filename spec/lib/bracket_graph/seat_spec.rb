@@ -60,7 +60,7 @@ describe BracketGraph::Seat do
     end
 
     it 'returns source_round + 1 if a source exists' do
-      subject.stub from: [double(round: 10), double(round: 10)]
+      allow(subject).to receive(:from) { [double(round: 10), double(round: 10)] }
       expect(subject.round).to eq 11
     end
   end
@@ -105,7 +105,7 @@ describe BracketGraph::Seat do
 
     it 'returns source match' do
       subject.create_children
-      expect(JSON.parse(subject.to_json).key? 'from').to be_true
+      expect(JSON.parse(subject.to_json).key? 'from').to be_truthy
     end
 
     it 'returns payload' do
