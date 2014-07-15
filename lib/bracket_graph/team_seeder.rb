@@ -9,14 +9,19 @@ class TeamSeeder
   def slots
     return @slots if @slots
     @slots = [true] * size
-    byes_to_seed = size - @teams.length
-    @slots[0] = nil if byes_to_seed >= 1
-    seed_byes_by_partition byes_to_seed - 1 if byes_to_seed > 1
+    seed_byes
     seed_teams
     @slots
   end
 
   private
+
+  def seed_byes
+    byes_to_seed = size - @teams.length
+    return if byes_to_seed == 0
+    @slots[0] = nil
+    seed_byes_by_partition byes_to_seed - 1 if byes_to_seed > 1
+  end
 
   def seed_teams
     @slots.each_with_index do |slot_value, index|
