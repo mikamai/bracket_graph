@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = BracketGraph::VERSION
   spec.authors       = ["Nicola Racco"]
   spec.email         = ["nicola@nicolaracco.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = %q{Amazing brackets JSON representations.}
+  spec.description   = %q{Amazing, more or less, brackets in JSON.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
