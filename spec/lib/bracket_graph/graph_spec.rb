@@ -29,7 +29,7 @@ describe BracketGraph::Graph do
         end
       end
       expect(nodes.count).to eq 128
-      nodes.each { |node| expect(node.from).to be_nil }
+      nodes.each { |node| expect(node.from).to be_empty }
     end
 
     it 'sets depths starting from 0' do
@@ -83,7 +83,7 @@ describe BracketGraph::Graph do
     it 'returns the last level seats' do
       subject = described_class.new 8
       subject.starting_seats.each do |seat|
-        expect(seat.from).to be_nil
+        expect(seat.from).to be_empty
       end
     end
   end

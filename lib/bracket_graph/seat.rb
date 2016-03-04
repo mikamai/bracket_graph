@@ -13,8 +13,9 @@ module BracketGraph
     #
     # @param position [Fixnum] Indicates the Seat position in the graph and acts like an Id
     # @param to [BracketGraph::Match] The destination match. By default it's nil (and this node will act like the root node)
-    def initialize position, to = nil
-      @position, @to = position, to
+    def initialize position, to: nil, round: nil
+      @position, @to, @round = position, to, round
+      @from = []
     end
 
     # Graph depth until this level. If there is no destination it will return 0, otherwise it will return the destionation depth
@@ -26,32 +27,19 @@ module BracketGraph
     # round is 0 at the lower level and Math.log2(size) in the root node
     # While depth is memoized, round is calculated each time. If the seat has a source, it's the source round + 1, otherwise it's 0
     def round
-      from && from.first.round + 1 || 0
-    end
-
-    # Builds a match as a source of this seat
-    # @raise [NoMethodError] if a source match has already been set
-    def create_children
-      raise NoMethodError, 'children already built' if from.present?
-      relative_position_halved = if to
-        (position - to.position).abs / 2
-      else
-        position / 2
-      end
-      @from = [
-        Seat.new(position - relative_position_halved, self),
-        Seat.new(position + relative_position_halved, self)
-      ]
+      @round || to.round - 1
     end
 
     def marshal_dump
       data = { position: position }
+      data[:round] = @round if @round
       from && data.update(from: from) || data
     end
 
     def marshal_load data
       @position = data[:position]
       @from = data[:from]
+      @round = data[:round]
       @from && @from.each { |s| s.to = self }
     end
 
@@ -63,6 +51,13 @@ module BracketGraph
 
     def to_json *attrs
       as_json.to_json(*attrs)
+    end
+
+    def inspect
+      """#<BracketGraph::Seat:#{position}
+      @from=#{from.map(&:position).inspect}
+      @to=#{(to && to.position || nil).inspect}
+      @payload=#{payload.inspect}>"""
     end
   end
 end

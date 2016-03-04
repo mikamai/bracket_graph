@@ -32,7 +32,7 @@ module BracketGraph
     def seed teams, shuffle: false
       raise ArgumentError, "Only a maximum of #{size} teams is allowed" if teams.size > size
       slots = TeamSeeder.new(teams, size, shuffle: shuffle).slots
-      starting_seats.each do |seat|
+      starting_seats.sort_by(&:position).each do |seat|
         seat.payload = slots.shift
       end
     end
@@ -44,6 +44,8 @@ module BracketGraph
 
     def marshal_load data
       @root = data
+      # backward compatibility
+      @root.round = Math.log2(size).to_i if @root.round.nil?
       # After loading the root node, regenerate all references
       update_references
     end
@@ -55,11 +57,11 @@ module BracketGraph
     private
 
     def build_tree size
-      @root = Seat.new size
+      @root = Seat.new size, round: Math.log2(size).to_i
       # Math.log2(size) indicates the graph depth
       Math.log2(size).to_i.times.inject [root] do |seats|
         seats.inject [] do |memo, seat|
-          memo.concat seat.create_children
+          memo.concat create_children_of seat
         end
       end
       update_references
@@ -67,15 +69,24 @@ module BracketGraph
 
     def update_references
       @seats = [root]
-      current_seats = [root]
-      root.round.times { current_seats = update_references_for_seats current_seats }
-      @starting_seats = current_seats
+      @starting_seats = []
+      nodes = [root]
+      while nodes.any?
+        @seats.concat nodes = nodes.map(&:from).flatten
+      end
+      @starting_seats = @seats.select { |s| s.from.empty? }
     end
 
-    def update_references_for_seats seats
-      seats.inject [] do |memo, seat|
-        @seats.concat(seat.from) && memo.concat(seat.from)
-      end
+    # Builds a match as a source of this seat
+    # @raise [NoMethodError] if a source match has already been set
+    def create_children_of seat
+      raise NoMethodError, 'children already built' if seat.from.any?
+      parent_position = seat.to ? seat.to.position : 0
+      relative_position_halved = (seat.position - parent_position) / 2
+      seat.from.concat [
+        Seat.new(seat.position - relative_position_halved, to: seat),
+        Seat.new(seat.position + relative_position_halved, to: seat)
+      ]
     end
   end
 end
