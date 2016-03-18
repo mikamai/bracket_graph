@@ -57,6 +57,11 @@ module BracketGraph
     private
 
     def build_tree size
+      build_tree! size
+      update_references
+    end
+
+    def build_tree! size
       @root = Seat.new size, round: Math.log2(size).to_i
       # Math.log2(size) indicates the graph depth
       Math.log2(size).to_i.times.inject [root] do |seats|
@@ -64,7 +69,6 @@ module BracketGraph
           memo.concat create_children_of seat
         end
       end
-      update_references
     end
 
     def update_references

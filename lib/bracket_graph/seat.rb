@@ -14,6 +14,7 @@ module BracketGraph
     # @param position [Fixnum] Indicates the Seat position in the graph and acts like an Id
     # @param to [BracketGraph::Match] The destination match. By default it's nil (and this node will act like the root node)
     def initialize position, to: nil, round: nil
+      round = to.round if to && round.nil?
       @position, @to, @round = position, to, round
       @from = []
     end
@@ -31,8 +32,7 @@ module BracketGraph
     end
 
     def marshal_dump
-      data = { position: position }
-      data[:round] = @round if @round
+      data = { position: position, round: round }
       from && data.update(from: from) || data
     end
 

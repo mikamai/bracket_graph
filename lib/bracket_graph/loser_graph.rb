@@ -3,12 +3,14 @@ require "bracket_graph/graph"
 module BracketGraph
   class LoserGraph < Graph
     class IdGenerator
-      def initialize
-        @last_id = 0
+      attr_reader :current
+
+      def initialize starting_id = 0
+        @current = starting_id
       end
 
       def next
-        @last_id += 1
+        @current += 1
       end
     end
 
@@ -17,10 +19,14 @@ module BracketGraph
       super
     end
 
+    def size
+      starting_seats.count + 1
+    end
+
     private
 
     def build_tree size
-      id_generator = IdGenerator.new
+      id_generator = IdGenerator.new size * 2 + 1
       @root = Seat.new id_generator.next, round: 2 * Math.log2(size).to_i - 2
       expected_rounds = 2 * (Math.log2(size).to_i - 1)
       expected_rounds.times.inject [root] do |seats, round|
