@@ -14,7 +14,7 @@ module BracketGraph
     # @param position [Fixnum] Indicates the Seat position in the graph and acts like an Id
     # @param to [BracketGraph::Match] The destination match. By default it's nil (and this node will act like the root node)
     def initialize position, to: nil, round: nil
-      round = to.round if to && round.nil?
+      round = to.round - 1 if to && round.nil?
       @position, @to, @round = position, to, round
       @from = []
     end
@@ -44,7 +44,7 @@ module BracketGraph
     end
 
     def as_json options = {}
-      data = { position: position }
+      data = { position: position, round: round }
       data.update payload: payload if payload
       from && data.update(from: from.map(&:as_json)) || data
     end
@@ -56,6 +56,7 @@ module BracketGraph
     def inspect
       """#<BracketGraph::Seat:#{position}
       @from=#{from.map(&:position).inspect}
+      @round=#{round}
       @to=#{(to && to.position || nil).inspect}
       @payload=#{payload.inspect}>"""
     end

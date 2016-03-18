@@ -69,6 +69,7 @@ module BracketGraph
           memo.concat create_children_of seat
         end
       end
+
     end
 
     def update_references

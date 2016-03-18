@@ -32,7 +32,44 @@ describe BracketGraph::DoubleEliminationGraph do
 
   it 'creates the final node in the last round' do
     subject = described_class.new 8
-    expect(subject.root.round).to eq 5
+    expect(subject.root.round).to eq 6
+  end
+
+  it 'syncs the rounds of the winner bracket' do
+    subject = described_class.new 16
+    memo = subject.winner_graph.seats.inject(Hash.new { |h, k| h[k] = [] }) do |m, s|
+      m[s.round] << s
+      m
+    end
+    expect(memo[0].count).to eq 16
+    expect(memo[1].count).to eq 8
+    expect(memo[2].count).to eq 4
+    expect(memo[3].count).to be_zero
+    expect(memo[4].count).to eq 2
+    expect(memo[5].count).to be_zero
+    expect(memo[6].count).to eq 1
+  end
+
+  it 'syncs the rounds of the loser bracket' do
+    subject = described_class.new 16
+    memo = subject.loser_graph.seats.inject(Hash.new { |h, k| h[k] = [] }) do |m, s|
+      m[s.round] << s
+      m
+    end
+    expect(memo[0].count).to be_zero
+    expect(memo[1].count).to eq 8
+    expect(memo[2].count).to eq 8
+    expect(memo[3].count).to eq 4
+    expect(memo[4].count).to eq 4
+    expect(memo[5].count).to eq 2
+    expect(memo[6].count).to eq 2
+    expect(memo[7].count).to eq 1
+  end
+
+  it 'after the sync the winner final is one round behind the real final' do
+    subject = described_class.new 16
+    expect(subject.loser_graph.root.round).to eq 7
+    expect(subject.winner_graph.root.round).to eq 6
   end
 
   describe '#size' do
@@ -56,7 +93,7 @@ describe BracketGraph::DoubleEliminationGraph do
     end
   end
 
-  describe '#seeds' do
+  describe '#seed' do
     it 'delegates to the winner graph' do
       subject = described_class.new 8
       allow(subject.winner_graph).to receive(:seed).and_return 'foo'
