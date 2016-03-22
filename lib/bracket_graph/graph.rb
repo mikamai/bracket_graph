@@ -48,10 +48,10 @@ module BracketGraph
 
     def marshal_load data
       @root = data
-      # backward compatibility
-      @root.round = Math.log2(size).to_i if @root.round.nil?
       # After loading the root node, regenerate all references
       update_references
+      # backward compatibility
+      @root.instance_variable_set '@round', Math.log2(size).to_i if @root.round.zero?
     end
 
     def as_json *attrs

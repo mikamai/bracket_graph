@@ -174,5 +174,12 @@ describe BracketGraph::Graph do
       other = described_class.new 2
       expect { other.marshal_load subject.root }.to change(other, :seats)
     end
+
+    it 'regenerates the round if the loaded root has no round' do
+      subject = described_class.new 8
+      subject.root.instance_variable_set '@round', 0
+      other = Marshal::load Marshal::dump subject
+      expect(other.root.round).to eq 3
+    end
   end
 end
