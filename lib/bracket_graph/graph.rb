@@ -55,7 +55,7 @@ module BracketGraph
     end
 
     def as_json *attrs
-      marshal_dump.to_json *attrs
+      marshal_dump.as_json *attrs
     end
 
     private
