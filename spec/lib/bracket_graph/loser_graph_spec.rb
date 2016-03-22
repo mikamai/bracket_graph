@@ -69,25 +69,31 @@ describe BracketGraph::LoserGraph do
       expect(subject.starting_seats.map(&:round).uniq).to eq [11,9,7,5,3,1,0]
     end
 
-    it 'sets root position to 1' do
+    it 'sets root position to doubled size + 2' do
       subject = described_class.new 64
-      expect(subject.root.position).to eq 1
+      expect(subject.root.position).to eq 130
     end
 
-    it 'sets the position of root children to 2 and 3' do
+    it 'sets the position of root children to root position +1 and +2' do
       subject = described_class.new 64
-      expect(subject.root.from.map(&:position)).to match_array [2,3]
+      expect(subject.root.from.map(&:position)).to match_array [131,132]
     end
 
-    it 'sets source seats (through the match) to 4 and 5' do
+    it 'sets source seats (through the match) positions' do
       subject = described_class.new 64
       children = subject.root.from[1].from
-      expect(children.map(&:position).sort).to eq [4, 5]
+      expect(children.map(&:position).sort).to eq [133, 134]
     end
 
     it 'does not duplicate positions' do
       subject = described_class.new 16
       expect(subject.seats.map(&:position).uniq.count).to eq subject.seats.count
+    end
+
+    it 'creates a graph given its root node' do
+      existing = described_class.new 4
+      subject = described_class.new existing.root
+      expect(subject.starting_seats).to eq existing.starting_seats
     end
   end
 
@@ -109,48 +115,11 @@ describe BracketGraph::LoserGraph do
       end
     end
   end
-  #
-  # describe '#seed' do
-  #   it 'raises error if there are more teams than starting seats' do
-  #     subject = described_class.new 4
-  #     expect { subject.seed [1,2,3,4,5] }.to raise_error ArgumentError
-  #   end
-  #
-  #   it 'assigns the given teams to the starting seats' do
-  #     subject = described_class.new 4
-  #     subject.seed [1,2,3,4]
-  #     expect(subject.starting_seats.map(&:payload)).to match_array [1,2,3,4]
-  #   end
-  #
-  #   it 'does not change the given array' do
-  #     subject = described_class.new 4
-  #     array = [1,2,3,4]
-  #     expect { subject.seed array }.to_not change array, :count
-  #   end
-  #
-  #   it 'fills seats by position' do
-  #     subject = described_class.new 4
-  #     subject.seed [1,2,3,4]
-  #     expect(subject.starting_seats.sort_by(&:position).map(&:payload)).to eq [1,2,3,4]
-  #   end
-  #
-  #   it 'leaves remaining seats with a nil payload' do
-  #     subject = described_class.new 4
-  #     subject.seed [1,2,3]
-  #     expect(subject.starting_seats.sort_by(&:position).map(&:payload)).to eq [nil,1,2,3]
-  #   end
-  #
-  #   it 'uses the TeamSeeder' do
-  #     subject = described_class.new 4
-  #     expect_any_instance_of(TeamSeeder).to receive(:slots).and_return []
-  #     subject.seed [1,2,3,4], shuffle: true
-  #   end
-  # end
 
   describe '#[]' do
     it 'return the seat with the given position' do
       subject = described_class.new 8
-      expect(subject[6].position).to eq 6
+      expect(subject[22].position).to eq 22
     end
   end
 

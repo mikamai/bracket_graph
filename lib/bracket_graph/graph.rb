@@ -8,11 +8,15 @@ module BracketGraph
     # Each seat will then follows the same template (seat -> match -> 2 seats) until the generated
     # last level seats (the starting seats) is equal to `size`.
     #
-    # @param size [Fixnum] The number of orphan seats to generate.
+    # @param size [Fixnum|Seat] The number of orphan seats to generate, or the root node
     # @raise [ArgumentError] if size is not a power of 2
-    def initialize size
-      raise ArgumentError, 'the given size is not a power of 2' if Math.log2(size) % 1 != 0
-      build_tree size
+    def initialize root_or_size
+      if root_or_size.is_a? Seat
+        marshal_load root_or_size
+      else
+        raise ArgumentError, 'the given size is not a power of 2' if Math.log2(root_or_size) % 1 != 0
+        build_tree root_or_size
+      end
     end
 
     def [](position)
@@ -50,7 +54,7 @@ module BracketGraph
       update_references
     end
 
-    def to_json *attrs
+    def as_json *attrs
       marshal_dump.to_json *attrs
     end
 

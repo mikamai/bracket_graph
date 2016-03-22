@@ -100,4 +100,16 @@ describe BracketGraph::DoubleEliminationGraph do
       expect(subject.seed).to eq 'foo'
     end
   end
+
+  it 'correctly dumps to json' do
+    subject = described_class.new(4).as_json
+    expect(subject).to be_a Hash
+    expect(subject[:from]).to be_a Array
+  end
+
+  it 'correctly saves and restores' do
+    data = Marshal::dump described_class.new(4)
+    subject = Marshal::load data
+    expect(subject.starting_seats.count).to eq 7
+  end
 end

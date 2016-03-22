@@ -24,28 +24,18 @@ module BracketGraph
       winner_graph.size
     end
 
-    def winner_starting_seats
-      winner_graph.starting_seats
-    end
+    %w(winner loser).each do |type|
+      define_method "#{type}_starting_seats" do
+        send("#{type}_graph").starting_seats
+      end
 
-    def winner_seats
-      winner_graph.seats
-    end
+      define_method "#{type}_seats" do
+        send("#{type}_graph").seats
+      end
 
-    def winner_root
-      winner_graph.root
-    end
-
-    def loser_starting_seats
-      loser_graph.starting_seats
-    end
-
-    def loser_seats
-      loser_graph.seats
-    end
-
-    def loser_root
-      loser_graph.root
+      define_method "#{type}_root" do
+        send("#{type}_graph").root
+      end
     end
 
     def seats
@@ -58,6 +48,21 @@ module BracketGraph
 
     def seed *args
       winner_graph.seed *args
+    end
+
+    def marshal_dump
+      # we need only the root node. All other variables can be restored on load
+      @root
+    end
+
+    def marshal_load data
+      @root = data
+      @winner_graph = Graph.new @root.from[0]
+      @loser_graph = LoserGraph.new @root.from[1]
+    end
+
+    def as_json options={}
+      marshal_dump.as_json options
     end
 
     private

@@ -14,8 +14,8 @@ module BracketGraph
       end
     end
 
-    def initialize size
-      raise ArgumentError, 'a loser graph require at least 4 participants' if size < 4
+    def initialize root_or_size
+      raise ArgumentError, 'a loser graph require at least 4 participants' if root_or_size.is_a?(Fixnum) && root_or_size < 4
       super
     end
 

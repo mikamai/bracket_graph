@@ -67,6 +67,12 @@ describe BracketGraph::Graph do
       subject = described_class.new 128
       expect(subject.seats.map(&:position).uniq.count).to eq subject.seats.count
     end
+
+    it 'creates a graph given its root node' do
+      existing = described_class.new 4
+      subject = described_class.new existing.root
+      expect(subject.starting_seats).to eq existing.starting_seats
+    end
   end
 
   describe '#starting_seats' do
