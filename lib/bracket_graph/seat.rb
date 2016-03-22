@@ -33,13 +33,13 @@ module BracketGraph
 
     def marshal_dump
       data = { position: position, round: round }
-      from && data.update(from: from) || data
+      from.any? && data.update(from: from) || data
     end
 
     def marshal_load data
       @position = data[:position]
-      @from = data[:from]
-      @round = data[:round]
+      @from = data[:from] || []
+      @round = data[:round] || 0
       @from && @from.each { |s| s.to = self }
     end
 
