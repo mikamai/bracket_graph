@@ -3,13 +3,19 @@ module BracketGraph
     attr_reader :root
     attr_reader :winner_graph, :loser_graph
 
-    def initialize size
-      @winner_graph = Graph.new size
-      @loser_graph = LoserGraph.new size
-      sync_winner_rounds
-      sync_loser_rounds
-      build_final_seat
-      assign_loser_links
+    def initialize root_or_size
+      if root_or_size.is_a? Seat
+        @root = root_or_size
+        @winner_graph = Graph.new @root.from[0]
+        @loser_graph = LoserGraph.new @root.from[1]
+      else
+        @winner_graph = Graph.new root_or_size
+        @loser_graph = LoserGraph.new root_or_size
+        sync_winner_rounds
+        sync_loser_rounds
+        build_final_seat
+        assign_loser_links
+      end
     end
 
     def [](position)
@@ -51,19 +57,8 @@ module BracketGraph
       winner_graph.seed *args
     end
 
-    def marshal_dump
-      # we need only the root node. All other variables can be restored on load
-      @root
-    end
-
-    def marshal_load data
-      @root = data
-      @winner_graph = Graph.new @root.from[0]
-      @loser_graph = LoserGraph.new @root.from[1]
-    end
-
     def as_json options={}
-      marshal_dump.as_json options
+      @root.as_json options
     end
 
     private

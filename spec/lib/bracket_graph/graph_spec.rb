@@ -154,32 +154,4 @@ describe BracketGraph::Graph do
       expect(subject.seats).to include subject.root
     end
   end
-
-  describe '#marshal_dump' do
-    it 'returns the root node' do
-      subject = described_class.new 8
-      expect(subject.marshal_dump).to eq subject.root
-    end
-  end
-
-  describe '#marshal_load' do
-    it 'requires the root node' do
-      subject = described_class.new 8
-      other = described_class.new 2
-      expect { other.marshal_load subject.root }.to change(other, :root).to subject.root
-    end
-
-    it 'updates all references' do
-      subject = described_class.new 8
-      other = described_class.new 2
-      expect { other.marshal_load subject.root }.to change(other, :seats)
-    end
-
-    it 'regenerates the round if the loaded root has no round' do
-      subject = described_class.new 8
-      subject.root.instance_variable_set '@round', 0
-      other = Marshal::load Marshal::dump subject
-      expect(other.root.round).to eq 3
-    end
-  end
 end

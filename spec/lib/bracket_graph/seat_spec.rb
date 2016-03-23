@@ -46,33 +46,6 @@ describe BracketGraph::Seat do
     end
   end
 
-  describe 'marshalling' do
-    it 'stores source, position and round' do
-      subject = subject_class.new 10, round: 10
-      subject.instance_variable_set '@from', ['asd']
-      expect(subject.marshal_dump).to eq position: 10, from: ['asd'], round: 10
-    end
-
-    it 'restores position' do
-      subject = subject_class.new 10, round: 10
-      expect { subject.marshal_load position: 1, from: nil }.to change(subject, :position).to 1
-    end
-
-    it 'restores source' do
-      subject = subject_class.new 10, round: 10
-      source = [subject_class.new(8), subject_class.new(6)]
-      expect { subject.marshal_load position: 1, from: source }.to change(subject, :from).to source
-    end
-
-    it 'restores source to' do
-      subject = described_class.new 10, round: 10
-      subject.from[0] = described_class.new 11, to: subject
-      other = described_class.new 10
-      other.marshal_load subject.marshal_dump
-      expect(other.from.map(&:to)).to eq [other]
-    end
-  end
-
   describe '#as_json' do
     subject { described_class.new 10, round: 10 }
 

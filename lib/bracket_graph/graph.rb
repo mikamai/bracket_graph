@@ -12,7 +12,8 @@ module BracketGraph
     # @raise [ArgumentError] if size is not a power of 2
     def initialize root_or_size
       if root_or_size.is_a? Seat
-        marshal_load root_or_size
+        @root = root_or_size
+        update_references
       else
         raise ArgumentError, 'the given size is not a power of 2' if Math.log2(root_or_size) % 1 != 0
         build_tree root_or_size
@@ -41,21 +42,8 @@ module BracketGraph
       end
     end
 
-    def marshal_dump
-      # we need only the root node. All other variables can be restored on load
-      @root
-    end
-
-    def marshal_load data
-      @root = data
-      # After loading the root node, regenerate all references
-      update_references
-      # backward compatibility
-      @root.instance_variable_set '@round', Math.log2(size).to_i if @root.round.zero?
-    end
-
     def as_json *attrs
-      marshal_dump.as_json *attrs
+      @root.as_json *attrs
     end
 
     private
