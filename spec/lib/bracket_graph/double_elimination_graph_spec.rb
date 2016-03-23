@@ -112,4 +112,37 @@ describe BracketGraph::DoubleEliminationGraph do
     subject = Marshal::load data
     expect(subject.starting_seats.count).to eq 7
   end
+
+  it 'assigns a loser to to each match' do
+    subject = described_class.new 16
+    candidates = subject.winner_seats - subject.winner_starting_seats
+    expect(candidates.select(&:loser_to).count).to eq candidates.count
+  end
+
+  it 'assigns only loser starting seats in the loser relationship' do
+    subject = described_class.new 16
+    candidates = subject.winner_seats - subject.winner_starting_seats
+    expect(candidates.map(&:loser_to)).to match_array subject.loser_starting_seats
+  end
+
+  it 'assigns each loser_to to a different seat' do
+    subject = described_class.new 16
+    candidates = subject.winner_seats - subject.winner_starting_seats
+    expect(candidates.map(&:loser_to).uniq.count).to eq candidates.count
+  end
+
+  it 'assigns loser_to links in a different order using the round oddity' do
+    subject = described_class.new 16
+    candidates = (subject.winner_seats - subject.winner_starting_seats).sort_by &:position
+    (1..subject.winner_root.round).each do |round|
+      round_candidates_positions = candidates.
+        select { |s| s.round == round }.
+        map { |c| c.loser_to.position }
+      if round.odd?
+        expect(round_candidates_positions).to eq round_candidates_positions.sort.reverse
+      else
+        expect(round_candidates_positions).to eq round_candidates_positions.sort
+      end
+    end
+  end
 end

@@ -94,4 +94,35 @@ describe BracketGraph::Seat do
       expect(subject.as_json[:payload]).to eq :id => 9
     end
   end
+
+  describe '#starting?' do
+    subject { described_class.new 10, round: 10 }
+
+    it 'returns true if there are no children' do
+      expect(subject).to be_starting
+    end
+
+    it 'returns false if there are children' do
+      subject.from << double
+      expect(subject).not_to be_starting
+    end
+
+    it 'returns true if #from is nil' do
+      subject.instance_variable_set '@from', nil
+      expect(subject).to be_starting
+    end
+  end
+
+  describe '#final?' do
+    subject { described_class.new 10, round: 10 }
+
+    it 'returns true if there is no parent seat' do
+      expect(subject).to be_final
+    end
+
+    it 'returns false if there is a parent seat' do
+      subject.to = double
+      expect(subject).not_to be_final
+    end
+  end
 end

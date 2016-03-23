@@ -9,6 +9,7 @@ module BracketGraph
       sync_winner_rounds
       sync_loser_rounds
       build_final_seat
+      assign_loser_links
     end
 
     def [](position)
@@ -89,6 +90,37 @@ module BracketGraph
     def sync_loser_rounds
       loser_graph.seats.each do |s|
         s.instance_variable_set '@round', s.round + 1
+      end
+    end
+
+    def winner_matches_by_round
+      winner_graph.seats.
+        reject(&:starting?).
+        sort_by(&:position).
+        inject({}) do |memo, seat|
+          memo[seat.round] ||= []
+          memo[seat.round] << seat
+          memo
+        end
+    end
+
+    def loser_starting_seats_by_round
+      loser_graph.starting_seats.sort_by(&:position).inject({}) do |memo, seat|
+        memo[seat.round] ||= []
+        memo[seat.round] << seat
+        memo
+      end
+    end
+
+    def assign_loser_links
+      winner_matches = winner_matches_by_round
+      loser_candidates = loser_starting_seats_by_round
+      winner_matches.each do |round, matches|
+        candidates = loser_candidates[round]
+        candidates.reverse! if round.even?
+        matches.each do |match|
+          match.loser_to = candidates.pop
+        end
       end
     end
   end

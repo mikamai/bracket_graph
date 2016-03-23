@@ -8,6 +8,8 @@ module BracketGraph
     attr_accessor :payload
     # Destination match of this seat.
     attr_accessor :to
+    # Destination match of this seat for the loser participant.
+    attr_accessor :loser_to
 
     # Creates a new seat for the bracket graph.
     #
@@ -17,6 +19,14 @@ module BracketGraph
       round ||= to.round - 1 if to
       @position, @to, @round = position, to, round
       @from = []
+    end
+
+    def starting?
+      from.nil? || from.empty?
+    end
+
+    def final?
+      to.nil?
     end
 
     # Graph depth until this level. If there is no destination it will return 0, otherwise it will return the destionation depth
@@ -33,7 +43,7 @@ module BracketGraph
 
     def marshal_dump
       data = { position: position, round: round }
-      from.any? && data.update(from: from) || data
+      from && from.any? ? data.update(from: from) : data
     end
 
     def marshal_load data
@@ -46,6 +56,7 @@ module BracketGraph
     def as_json options = {}
       data = { position: position, round: round }
       data.update payload: payload if payload
+      data.update loser_to: loser_to.position if loser_to
       from && data.update(from: from.map(&:as_json)) || data
     end
 
@@ -54,6 +65,7 @@ module BracketGraph
       @from=#{from.map(&:position).inspect}
       @round=#{round}
       @to=#{(to && to.position || nil).inspect}
+      @loser_to=#{(loser_to && loser_to.position || nil).inspect}
       @payload=#{payload.inspect}>"""
     end
   end
