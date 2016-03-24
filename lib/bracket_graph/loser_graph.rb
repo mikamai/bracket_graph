@@ -32,8 +32,9 @@ module BracketGraph
       expected_rounds.times.inject [root] do |seats, round|
         seats.each_with_index.inject [] do |memo, (seat, index)|
           children = create_children_of seat, id_generator
+          side_count = (seats.count / 2.0).ceil
           if round.even?
-            memo << children[index > seats.count / 2 ? 0 : 1]
+            memo << children[index % side_count >= (side_count / 2.0).ceil ? 0 : 1]
           else
             memo.concat children
           end
