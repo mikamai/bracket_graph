@@ -73,6 +73,14 @@ describe BracketGraph::Graph do
       subject = described_class.new existing.root
       expect(subject.starting_seats).to eq existing.starting_seats
     end
+
+    it 'always sets the children by position order' do
+      subject = described_class.new 32
+      positions_groups = subject.seats.map { |s| s.from.map &:position }
+      positions_groups.each do |position_group|
+        expect(position_group).to eq position_group.sort
+      end
+    end
   end
 
   describe '#starting_seats' do

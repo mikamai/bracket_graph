@@ -79,7 +79,7 @@ module BracketGraph
     def create_children_of seat
       raise NoMethodError, 'children already built' if seat.from.any?
       parent_position = seat.to ? seat.to.position : 0
-      relative_position_halved = (seat.position - parent_position) / 2
+      relative_position_halved = ((seat.position - parent_position) / 2).abs
       seat.from.concat [
         Seat.new(seat.position - relative_position_halved, to: seat),
         Seat.new(seat.position + relative_position_halved, to: seat)
