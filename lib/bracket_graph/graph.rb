@@ -8,11 +8,16 @@ module BracketGraph
     # Each seat will then follows the same template (seat -> match -> 2 seats) until the generated
     # last level seats (the starting seats) is equal to `size`.
     #
-    # @param size [Fixnum] The number of orphan seats to generate.
+    # @param size [Fixnum|Seat] The number of orphan seats to generate, or the root node
     # @raise [ArgumentError] if size is not a power of 2
-    def initialize size
-      raise ArgumentError, 'the given size is not a power of 2' if Math.log2(size) % 1 != 0
-      build_tree size
+    def initialize root_or_size
+      if root_or_size.is_a? Seat
+        @root = root_or_size
+        update_references
+      else
+        raise ArgumentError, 'the given size is not a power of 2' if Math.log2(root_or_size) % 1 != 0
+        build_tree root_or_size
+      end
     end
 
     def [](position)
@@ -32,50 +37,53 @@ module BracketGraph
     def seed teams, shuffle: false
       raise ArgumentError, "Only a maximum of #{size} teams is allowed" if teams.size > size
       slots = TeamSeeder.new(teams, size, shuffle: shuffle).slots
-      starting_seats.each do |seat|
+      starting_seats.sort_by(&:position).each do |seat|
         seat.payload = slots.shift
       end
     end
 
-    def marshal_dump
-      # we need only the root node. All other variables can be restored on load
-      @root
-    end
-
-    def marshal_load data
-      @root = data
-      # After loading the root node, regenerate all references
-      update_references
-    end
-
-    def to_json *attrs
-      marshal_dump.to_json *attrs
+    def as_json *attrs
+      @root.as_json *attrs
     end
 
     private
 
     def build_tree size
-      @root = Seat.new size
+      build_tree! size
+      update_references
+    end
+
+    def build_tree! size
+      @root = Seat.new size, round: Math.log2(size).to_i
       # Math.log2(size) indicates the graph depth
       Math.log2(size).to_i.times.inject [root] do |seats|
         seats.inject [] do |memo, seat|
-          memo.concat seat.create_children
+          memo.concat create_children_of seat
         end
       end
-      update_references
+
     end
 
     def update_references
       @seats = [root]
-      current_seats = [root]
-      root.round.times { current_seats = update_references_for_seats current_seats }
-      @starting_seats = current_seats
+      @starting_seats = []
+      nodes = [root]
+      while nodes.any?
+        @seats.concat nodes = nodes.map(&:from).flatten
+      end
+      @starting_seats = @seats.select { |s| s.from.empty? }
     end
 
-    def update_references_for_seats seats
-      seats.inject [] do |memo, seat|
-        @seats.concat(seat.from) && memo.concat(seat.from)
-      end
+    # Builds a match as a source of this seat
+    # @raise [NoMethodError] if a source match has already been set
+    def create_children_of seat
+      raise NoMethodError, 'children already built' if seat.from.any?
+      parent_position = seat.to ? seat.to.position : 0
+      relative_position_halved = ((seat.position - parent_position) / 2).abs
+      seat.from.concat [
+        Seat.new(seat.position - relative_position_halved, to: seat),
+        Seat.new(seat.position + relative_position_halved, to: seat)
+      ]
     end
   end
 end
