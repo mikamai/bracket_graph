@@ -89,7 +89,12 @@ describe BracketGraph::DoubleEliminationGraph do
   describe '#seats' do
     it 'returns the sum of seats' do
       subject = described_class.new 8
-      expect(subject.seats).to match_array subject.winner_graph.seats + subject.loser_graph.seats
+      expect(subject.seats).to match_array [subject.root] + subject.winner_graph.seats + subject.loser_graph.seats
+    end
+
+    it 'returns the root node too' do
+      subject = described_class.new 8
+      expect(subject.seats).to include subject.root
     end
   end
 

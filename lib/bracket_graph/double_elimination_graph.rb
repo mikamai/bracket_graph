@@ -46,7 +46,7 @@ module BracketGraph
     end
 
     def seats
-      winner_seats + loser_seats
+      [root] + winner_seats + loser_seats
     end
 
     def starting_seats
