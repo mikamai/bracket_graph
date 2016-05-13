@@ -62,3 +62,18 @@ graph.loser_root # => BracketGraph::Seat for the final match of the loser bracke
 graph.loser_seats # => Array[BracketGraph::Seat] all nodes of the loser bracket
 graph.loser_starting_seats # => Array[BracketGraph::Seat] all starting nodes of the loser bracket
 ```
+
+## Round Robin "Bracket"
+
+```ruby
+BracketGraph::RoundRobinGraph.new(bracket_size, double_match: false) # => if the double_match is true the graph will have the double of match and starting seats
+```
+
+## About the Graph objects
+
+```ruby
+graph.starting_seats # => Array[BracketGraph::Seat] all starting seats (N for each round)
+graph[12] # => BracketGraph::Seat with id/position 12
+graph.seed(teams) # => seeds each item in the given array to a starting node in each round
+graph.seed(teams, shuffle: true) # => seeds teams after shuffle
+```
