@@ -80,32 +80,46 @@ describe BracketGraph::RoundRobinGraph do
       expect { subject.seed [1,2,3,4,5] }.to raise_error ArgumentError
     end
 
-    it 'assigns the given teams to the starting seats of each round' do
+    it 'assigns all payload in each round' do
       subject = described_class.new 4
       subject.seed [1,2,3,4]
-      expect(subject.starting_seats_by_round(0).map(&:payload)).to eq [1,4,2,3]
-      expect(subject.starting_seats_by_round(1).map(&:payload)).to eq [1,3,4,2]
-      expect(subject.starting_seats_by_round(2).map(&:payload)).to eq [1,2,3,4]
+      0.upto(2).each do |round|
+        expect(subject.starting_seats_by_round(round).map(&:payload).uniq).to \
+          match_array [1,4,2,3]
+      end
     end
 
-    it 'leaves remaining seats with a nil payload' do
+    it 'assigns a bye in each round' do
       subject = described_class.new 4
       subject.seed [1,2,3]
-      expect(subject.starting_seats.sort_by(&:position).map(&:payload)).to \
-        eq [nil,3,1,2,nil,2,3,1,nil,1,2,3]
+      0.upto(2).each do |round|
+        expect(subject.starting_seats_by_round(round).map(&:payload)).to \
+          include nil
+      end
+    end
+
+    context 'randomly swap the position of the seat' do
+      subject{ described_class.new 4 }
+      before { allow(subject).to receive(:should_swap?).and_return true }
+
+      it 'assigns the payload switched' do
+        subject.seed [1,2,3,4]
+        expect(subject.starting_seats_by_round(0).map(&:payload)).to \
+          eq [4,1,3,2]
+      end
     end
 
     context 'when the return match should be played' do
-      it 'assigns the given teams to the starting seats of each round' do
+      it 'assigns the given teams to the opposite position in the return round' do
         subject = described_class.new 4, double_match: true
         subject.seed [1,2,3,4]
-        expect(subject.starting_seats_by_round(0).map(&:payload)).to eq [1,4,2,3]
-        expect(subject.starting_seats_by_round(1).map(&:payload)).to eq [1,3,4,2]
-        expect(subject.starting_seats_by_round(2).map(&:payload)).to eq [1,2,3,4]
-        # return matches
-        expect(subject.starting_seats_by_round(3).map(&:payload)).to eq [4,1,3,2]
-        expect(subject.starting_seats_by_round(4).map(&:payload)).to eq [3,1,2,4]
-        expect(subject.starting_seats_by_round(5).map(&:payload)).to eq [2,1,4,3]
+
+        [[0,3],[1,4],[2,5]].each do |round, return_round|
+          payload = subject.starting_seats_by_round(round).map(&:payload)
+          return_payload = subject.starting_seats_by_round(return_round).map(&:payload)
+          expect(payload[0..1]).to eq return_payload[0..1].reverse
+          expect(payload[2..3]).to eq return_payload[2..3].reverse
+        end
       end
     end
   end

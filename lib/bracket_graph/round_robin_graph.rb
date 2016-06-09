@@ -48,18 +48,41 @@ module BracketGraph
     def seed teams, shuffle: false
       raise ArgumentError, "Only a maximum of #{size} teams is allowed" if teams.size > size
       slots = TeamSeeder.new(teams, size, shuffle: shuffle).slots
-      starting_seats.map(&:round).uniq.each do |round|
-        starting_seats_by_round(round).each_slice(2).each_with_index do |pair, index|
-          home, away = pair
-          away, home = pair if return_round? round
-          home.payload = slots[index]
-          away.payload = slots.reverse[index]
+      rounds.each do |round|
+        get_pairs_from_round(round).each_with_index do |pair, index|
+          payloads = []
+          if return_round? round
+            twin_home, twin_away = get_pair_form_twin_round round, index
+            payloads = [twin_away.payload, twin_home.payload]
+          else
+            pair.reverse! if should_swap?
+            payloads = [slots[index], slots.reverse[index]]
+          end
+          pair.each_with_index do |seat, payload_index|
+            seat.payload = payloads[payload_index]
+          end
         end
-        slots = [slots[0]] + slots[1..-1].rotate(-1)
+        slots = rotate_slots slots
       end
     end
 
     private
+
+    def get_pairs_from_round round
+      starting_seats_by_round(round).each_slice(2)
+    end
+
+    def get_pair_form_twin_round round, index
+      get_pairs_from_round(twin_round(round)).to_a[index]
+    end
+
+    def rotate_slots slots
+      [slots[0]] + slots[1..-1].rotate(-1)
+    end
+
+    def should_swap?
+      rand > 0.5
+    end
 
     def build_tree size
       build_tree! size
@@ -78,18 +101,28 @@ module BracketGraph
       end
     end
 
+    # returns the index of the round where the matches composition
+    # are the same as the give round
+    def twin_round round
+      round - (max_round / 2)
+    end
+
+    def rounds
+      starting_seats.map(&:round).uniq
+    end
+
     def rounds_count size
       return size - 1 unless double_match
       size * 2 - 2
     end
 
     def max_round
-      starting_seats.map(&:round).max
+      starting_seats.map(&:round).max + 1
     end
 
     def return_round? round
       return false unless double_match
-      round > max_round / 2
+      round >= max_round / 2
     end
 
     def update_references
