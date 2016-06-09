@@ -98,17 +98,6 @@ describe BracketGraph::RoundRobinGraph do
       end
     end
 
-    context 'randomly swap the position of the seat' do
-      subject{ described_class.new 4 }
-      before { allow(subject).to receive(:should_swap?).and_return true }
-
-      it 'assigns the payload switched' do
-        subject.seed [1,2,3,4]
-        expect(subject.starting_seats_by_round(0).map(&:payload)).to \
-          eq [4,1,3,2]
-      end
-    end
-
     context 'when the return match should be played' do
       it 'assigns the given teams to the opposite position in the return round' do
         subject = described_class.new 4, double_match: true

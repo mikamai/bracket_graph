@@ -47,7 +47,8 @@ module BracketGraph
     # @raise [ArgumentError] if `teams.count` is greater then `#size`
     def seed teams, shuffle: false
       raise ArgumentError, "Only a maximum of #{size} teams is allowed" if teams.size > size
-      slots = TeamSeeder.new(teams, size, shuffle: shuffle).slots
+      team_seeder = RoundRobinTeamSeeder.new(teams, size, shuffle: shuffle)
+      slots = team_seeder.rotate_slots
       rounds.each do |round|
         get_pairs_from_round(round).each_with_index do |pair, index|
           payloads = []
@@ -56,13 +57,13 @@ module BracketGraph
             payloads = [twin_away.payload, twin_home.payload]
           else
             pair.reverse! if should_swap?
-            payloads = [slots[index], slots.reverse[index]]
+            payloads = slots.shift 2
           end
           pair.each_with_index do |seat, payload_index|
             seat.payload = payloads[payload_index]
           end
         end
-        slots = rotate_slots slots
+        slots = team_seeder.rotate_slots
       end
     end
 
@@ -74,10 +75,6 @@ module BracketGraph
 
     def get_pair_form_twin_round round, index
       get_pairs_from_round(twin_round(round)).to_a[index]
-    end
-
-    def rotate_slots slots
-      [slots[0]] + slots[1..-1].rotate(-1)
     end
 
     def should_swap?
