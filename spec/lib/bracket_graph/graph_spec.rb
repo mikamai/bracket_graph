@@ -96,6 +96,10 @@ describe BracketGraph::Graph do
           expect(third_fourth_match.position).to eq 8
         end
 
+        it 'his rount is the same of the root' do
+          expect(third_fourth_match.round).to eq subject.root.round
+        end
+
         it 'is included in the list of the seats' do
           expect(subject.seats).to include third_fourth_match
         end
@@ -111,9 +115,14 @@ describe BracketGraph::Graph do
             expect(childrens.map(&:from)).to eq [[],[]]
           end
 
-          it 'the position are based on the parent' do
+          it 'their positions are based on the parent' do
             parent_position = third_fourth_match.position
             expect(childrens.map(&:position)).to eq [1,2].map { |i| parent_position + i  }
+          end
+
+          it 'their rounds are the same of the parent' do
+            parent_round = third_fourth_match.round
+            expect(childrens.map(&:round).uniq.first).to eq parent_round
           end
 
           it 'are setted as loser_to of the semi-finals' do

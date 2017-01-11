@@ -68,8 +68,8 @@ module BracketGraph
     def create_third_fourth_match
       @third_fourth_match = Seat.new(@root.position*2, round: @root.round)
       @third_fourth_match.from.concat [
-        Seat.new(@third_fourth_match.position + 1, to: @third_fourth_match),
-        Seat.new(@third_fourth_match.position + 2, to: @third_fourth_match),
+        Seat.new(@third_fourth_match.position + 1, to: @third_fourth_match, round: @root.round),
+        Seat.new(@third_fourth_match.position + 2, to: @third_fourth_match, round: @root.round),
       ]
       @root.from[0].loser_to = @third_fourth_match.from[0]
       @root.from[1].loser_to = @third_fourth_match.from[1]
