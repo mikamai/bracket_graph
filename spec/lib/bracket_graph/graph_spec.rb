@@ -83,7 +83,7 @@ describe BracketGraph::Graph do
     end
 
     context 'when a third and fourth match is needed' do
-      subject { described_class.new 4, true }
+      subject { described_class.new 4, need_third_fourth_match: true }
 
       describe 'Graph#third_fourth_match' do
         let(:third_fourth_match) { subject.third_fourth_match }

@@ -10,7 +10,7 @@ module BracketGraph
     #
     # @param size [Fixnum|Seat] The number of orphan seats to generate, or the root node
     # @raise [ArgumentError] if size is not a power of 2
-    def initialize root_or_size, need_third_fourth_match = false
+    def initialize root_or_size, need_third_fourth_match: false
       @need_third_fourth_match = need_third_fourth_match
       if root_or_size.is_a? Seat
         @root = root_or_size

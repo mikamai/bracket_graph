@@ -35,10 +35,10 @@ seat.payload # custom payload that can be also seeded via BracketGraph::Graph#se
 If you need the match for the third and fourth place you can create the graph with an additional argument
 
 ```ruby
-ghaph = BracketGraph::Graph.new(bracket_size, true)
+ghaph = BracketGraph::Graph.new(bracket_size, need_third_fourth_match: true)
 ```
 
-This will create a classical Single Elimination graph but with the `#third_fourth_match` valorized. This seat is out of the tree and linked to the other seats only by the `loser_to` in the semi-finals.
+This will create a classical Single Elimination graph but with the `#third_fourth_match` valorized. This seat is standalone tree with his starting seats linked to main tree only by the `loser_to` reference in the semi-finals.
 
 ```ruby
 graph.third_fourth_match # => BracketGraph::Seat for the third and fourth match
