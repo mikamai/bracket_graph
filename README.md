@@ -38,11 +38,13 @@ If you need the match for the third and fourth place you can create the graph wi
 ghaph = BracketGraph::Graph.new(bracket_size, need_third_fourth_match: true)
 ```
 
-This will create a classical Single Elimination graph but with the `#third_fourth_match` valorized. This seat is standalone tree with his starting seats linked to main tree only by the `loser_to` reference in the semi-finals.
+This will create a classical Single Elimination graph but with the `#third_fourth_match` valorized. This seat represent a standalone tree with two starting seats in the `from` attribute linked to the main tree only by the `loser_to` reference in the semi-finals.
 
 ```ruby
 graph.third_fourth_match # => BracketGraph::Seat for the third and fourth match
 ```
+
+The `position` for this match is the double of the `graph.root` because is the first free position
 
 ## Double Elimination Bracket
 

@@ -66,13 +66,14 @@ module BracketGraph
     end
 
     def create_third_fourth_match
-      @third_fourth_match = Seat.new(@root.position*2, round: @root.round)
-      @third_fourth_match.from.concat [
-        Seat.new(@third_fourth_match.position + 1, to: @third_fourth_match, round: @root.round),
-        Seat.new(@third_fourth_match.position + 2, to: @third_fourth_match, round: @root.round),
-      ]
-      @root.from[0].loser_to = @third_fourth_match.from[0]
-      @root.from[1].loser_to = @third_fourth_match.from[1]
+      @third_fourth_match = Seat.new(root.position*2, round: root.round).tap do |match|
+        match.from.concat [
+          Seat.new(match.position + 1, to: match, round: root.round),
+          Seat.new(match.position + 2, to: match, round: root.round),
+        ]
+        root.from[0].loser_to = match.from[0]
+        root.from[1].loser_to = match.from[1]
+      end
     end
 
     def update_references
@@ -87,8 +88,8 @@ module BracketGraph
     end
 
     def update_third_fourth_refernces
-      @seats << @third_fourth_match
-      @seats.concat @third_fourth_match.from
+      @seats << third_fourth_match
+      @seats.concat third_fourth_match.from
     end
 
     # Builds a match as a source of this seat
