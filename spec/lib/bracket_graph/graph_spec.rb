@@ -81,6 +81,68 @@ describe BracketGraph::Graph do
         expect(position_group).to eq position_group.sort
       end
     end
+
+    context 'when a third and fourth match is needed' do
+      subject { described_class.new 4, need_third_fourth_match: true }
+
+      describe 'Graph#third_fourth_match' do
+        let(:third_fourth_match) { subject.third_fourth_match }
+
+        it 'is a seat' do
+          expect(third_fourth_match).to be_a BracketGraph::Seat
+        end
+
+        it 'his position is the double of the size' do
+          expect(third_fourth_match.position).to eq 8
+        end
+
+        it 'his rount is the same of the root' do
+          expect(third_fourth_match.round).to eq subject.root.round
+        end
+
+        it 'is included in the list of the seats' do
+          expect(subject.seats).to include third_fourth_match
+        end
+
+        describe '.childrens' do
+          let(:childrens) { third_fourth_match.from }
+
+          it 'are 2' do
+            expect(childrens.size).to eq 2
+          end
+
+          it 'are starting seats' do
+            expect(childrens.map(&:from)).to eq [[],[]]
+          end
+
+          it 'their positions are based on the parent' do
+            parent_position = third_fourth_match.position
+            expect(childrens.map(&:position)).to eq [1,2].map { |i| parent_position + i  }
+          end
+
+          it 'their rounds are the same of the parent' do
+            parent_round = third_fourth_match.round
+            expect(childrens.map(&:round).uniq.first).to eq parent_round
+          end
+
+          it 'are setted as loser_to of the semi-finals' do
+            expect(subject.root.from.map(&:loser_to)).to match childrens
+          end
+
+          it 'are included in the list of the seats' do
+            childrens.map(&:position).each do |children|
+              expect(subject.seats.map(&:position)).to include children
+            end
+          end
+
+          it 'are not included in the list of the starting_seats' do
+            childrens.map(&:position).each do |children|
+              expect(subject.starting_seats.map(&:position)).to_not include children
+            end
+          end
+        end
+      end
+    end
   end
 
   describe '#starting_seats' do

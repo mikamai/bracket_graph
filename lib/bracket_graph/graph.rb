@@ -1,6 +1,6 @@
 module BracketGraph
   class Graph
-    attr_reader :root
+    attr_reader :root, :third_fourth_match
     attr_reader :starting_seats, :seats
 
     # Builds a new graph.
@@ -10,7 +10,8 @@ module BracketGraph
     #
     # @param size [Fixnum|Seat] The number of orphan seats to generate, or the root node
     # @raise [ArgumentError] if size is not a power of 2
-    def initialize root_or_size
+    def initialize root_or_size, need_third_fourth_match: false
+      @need_third_fourth_match = need_third_fourth_match
       if root_or_size.is_a? Seat
         @root = root_or_size
         update_references
@@ -61,7 +62,18 @@ module BracketGraph
           memo.concat create_children_of seat
         end
       end
+      create_third_fourth_match if @need_third_fourth_match
+    end
 
+    def create_third_fourth_match
+      @third_fourth_match = Seat.new(root.position*2, round: root.round).tap do |match|
+        match.from.concat [
+          Seat.new(match.position + 1, to: match, round: root.round),
+          Seat.new(match.position + 2, to: match, round: root.round),
+        ]
+        root.from[0].loser_to = match.from[0]
+        root.from[1].loser_to = match.from[1]
+      end
     end
 
     def update_references
@@ -72,6 +84,12 @@ module BracketGraph
         @seats.concat nodes = nodes.map(&:from).flatten
       end
       @starting_seats = @seats.select { |s| s.from.empty? }
+      update_third_fourth_refernces if @need_third_fourth_match
+    end
+
+    def update_third_fourth_refernces
+      @seats << third_fourth_match
+      @seats.concat third_fourth_match.from
     end
 
     # Builds a match as a source of this seat

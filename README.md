@@ -7,10 +7,10 @@ It helps managing a graph for a single elimination bracket where each seat leads
 ## Single Elimination Bracket
 
 ```ruby
-BracketGraph::Graph.new(bracket_size)
+graph = BracketGraph::Graph.new(bracket_size)
 ```
 
-## About the Graph object
+### About the Graph object
 
 ```ruby
 graph.root # => BracketGraph::Seat for the final match
@@ -21,7 +21,7 @@ graph.seed(teams) # => seeds each item in the given array to a starting node
 graph.seed(teams, shuffle: true) # => seeds teams after shuffle
 ```
 
-## About the Graph nodes
+### About the Graph nodes
 
 ```ruby
 seat.from # Array[BracketGraph::Seat] source nodes. Empty array for a starting node
@@ -29,6 +29,22 @@ seat.to # parent node. nil for the final node
 seat.position # node position id
 seat.payload # custom payload that can be also seeded via BracketGraph::Graph#seed
 ```
+
+### Third and Fourth Match
+
+If you need the match for the third and fourth place you can create the graph with an additional argument
+
+```ruby
+ghaph = BracketGraph::Graph.new(bracket_size, need_third_fourth_match: true)
+```
+
+This will create a classical Single Elimination graph but with the `#third_fourth_match` valorized. This seat represent a standalone tree with two starting seats in the `from` attribute linked to the main tree only by the `loser_to` reference in the semi-finals.
+
+```ruby
+graph.third_fourth_match # => BracketGraph::Seat for the third and fourth match
+```
+
+The `position` for this match is the double of the `graph.root` because is the first free position
 
 ## Double Elimination Bracket
 
