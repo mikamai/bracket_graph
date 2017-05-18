@@ -8,7 +8,7 @@ module BracketGraph
     # Each seat will then follows the same template (seat -> match -> 2 seats) until the generated
     # last level seats (the starting seats) is equal to `size`.
     #
-    # @param size [Fixnum|Seat] The number of orphan seats to generate, or the root node
+    # @param size [Integer|Seat] The number of orphan seats to generate, or the root node
     # @raise [ArgumentError] if size is not a power of 2
     def initialize root_or_size, need_third_fourth_match: false
       @need_third_fourth_match = need_third_fourth_match

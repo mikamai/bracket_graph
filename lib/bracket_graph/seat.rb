@@ -13,7 +13,7 @@ module BracketGraph
 
     # Creates a new seat for the bracket graph.
     #
-    # @param position [Fixnum] Indicates the Seat position in the graph and acts like an Id
+    # @param position [Integer] Indicates the Seat position in the graph and acts like an Id
     # @param to [BracketGraph::Match] The destination match. By default it's nil (and this node will act like the root node)
     def initialize position, to: nil, round: nil
       round ||= to.round - 1 if to
